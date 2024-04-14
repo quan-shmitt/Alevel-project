@@ -18,7 +18,9 @@ namespace CameraTest
 {
     public partial class Form1 : Form
     {
-        private Panel pnlSettings;
+        public static Panel pnlSettings;
+        private static Panel TrainPanel;
+        public static TextBox status;
 
         public Form1()
         {
@@ -34,12 +36,12 @@ namespace CameraTest
         VideoCaptureDevice videoCaptureDevice;
         Bitmap bitmap;
         bool cameraExists = false;
+        ManageSettings manageSettings = new ManageSettings();
+
 
 
         private void ButtonLock()
         {
-            
-
             btnSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right; // Anchor to top-right corner
             btnSettings.Location = new Point(this.ClientSize.Width - btnSettings.Width - 10, 10); // Adjust position
 
@@ -58,39 +60,16 @@ namespace CameraTest
 
         private void GenSettings()
         {
-            TextBox textBox1 = new TextBox();
-            Label label1 = new Label();
-            Button BtnApply = new Button();
-
-
 
             pnlSettings = new Panel();
-            pnlSettings.Location = new Point(100, 400);
-            pnlSettings.Size = new Size(400, 300);
             pnlSettings.BorderStyle = BorderStyle.Fixed3D;
-            pnlSettings.Visible = false; // Initially hide the settings panel
-                                         // Add controls to pnlSettings if needed
-            label1.Location = new Point(16, 16);
-            label1.Text = "Hidden Layer Size";
-            label1.Size = new Size(104, 16);
-
-            textBox1.Location = new Point(16, 32);
-            textBox1.Text = "";
-            textBox1.Size = new Size(152, 20);
-
-            BtnApply.Size = new Size(50, 25); // Set the size of the button
-            BtnApply.Anchor = AnchorStyles.Top | AnchorStyles.Right; // Anchor the button to the bottom right corner
-            BtnApply.Location = new Point(pnlSettings.ClientSize.Width - BtnApply.Width - 10,  10); // Position the button
-            BtnApply.Text = "&Apply"; // Set the text of the button
-
+            pnlSettings.Size = ClientSize;
+            pnlSettings.Visible = false;
             Controls.Add(pnlSettings);
 
-            BtnApply.Click += btnApply_Click;
-
-            pnlSettings.Controls.Add(label1);
-            pnlSettings.Controls.Add(textBox1);
-            pnlSettings.Controls.Add(BtnApply);
+            manageSettings.AddSetting(ref pnlSettings);
         }
+
         private void Form1_Resize(object sender, EventArgs e)
         {
             pic.Size = new Size(this.ClientRectangle.Width - 100, this.ClientRectangle.Height - 100);
@@ -99,11 +78,13 @@ namespace CameraTest
         private void Form1_Load(object sender, EventArgs e)
         {
             Form1_Resize(sender, e);
+            GetConfigs();
 
 
             btnMain.Visible = false;
             // Call GenSettings to create and configure the panels
             GenSettings();
+
 
             // Set the initial visibility of panels
             pnlSettings.Visible = false;
@@ -126,22 +107,12 @@ namespace CameraTest
 
         }
 
-        private void btnApply_Click(object sender, EventArgs e)
+        public void GetConfigs()
         {
-            Panel settingsPanel = pnlSettings; // Assuming pnlSettings is accessible within your current method
+            string[] ConfigList = Directory.GetFiles("Data\\Configs");
 
-            // Access the TextBox within the Panel
-            TextBox textBoxInSettingsPanel = null;
-            foreach (Control control in settingsPanel.Controls)
-            {
-                if (control is TextBox)
-                {
-                    textBoxInSettingsPanel = (TextBox)control;
-                    break; // Exit the loop once we find the TextBox
-                }
-            }
-
-            //TOMLWrite.WriteHiddenLayerCount(Convert.ToInt32(textBoxInSettingsPanel.Text));
+            TOMLHandle.GetToml(ConfigList[0]);
+            TOMLWrite.GetToml(ConfigList[0]);
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -235,6 +206,7 @@ namespace CameraTest
             // Make the settings panel fill the entire form
             pnlSettings.Dock = DockStyle.Fill;
             pnlSettings.Visible = true;
+
         }
 
         private void btnBack_Click(object sender, EventArgs e)
@@ -248,6 +220,31 @@ namespace CameraTest
             btnMain.Visible = false;
 
             pnlSettings.Visible = false;
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            init_TrainingMenu();
+        }
+
+        private void init_TrainingMenu()
+        {
+            TrainPanel = new Panel();
+            TrainPanel.Dock = DockStyle.Fill;
+            TrainPanel.BorderStyle = BorderStyle.Fixed3D;
+            Controls.Add(TrainPanel);
+            TrainPanel.Visible = true;
+
+            foreach(Control control in Controls)
+            {
+                if (control != TrainPanel)
+                {
+                    control.Visible = false;
+                }
+            }
+            TrainingMenu.SetPanel(TrainPanel);
+            TrainingMenu.form1_init(this);
+            TrainingMenu.Trainmenu();
         }
     }
 }
