@@ -35,7 +35,7 @@ namespace CameraTest
 
             TrackBar[] trackBars = new TrackBar[5];
             TextBox[] textBoxes = new TextBox[5];
-            string[] titles = new string[] { "Hidden layer count: Please input manually. Use spaces", "Learning Rate", "Kernel Size", "Kernel Step", "Pool Size"};
+            string[] titles = new string[] { "Hidden layer count", "Learning Rate", "Kernel Size", "Kernel Step", "Pool Size"};
             int[] maximum = new int[] {50, 20, 5, 5, 5};
 
             comboBoxConfigFiles = new ComboBox();
@@ -102,7 +102,23 @@ namespace CameraTest
                 parentPanel.Controls.Add(trackBars[i]);
                 parentPanel.Controls.Add(headingLabel);
                 parentPanel.Controls.Add(textBoxes[i]);
+
+
+
+
+
             }
+
+            Label label = new Label();
+            label.Text = "CNN Algorithms:";
+            label.AutoSize = true;
+            label.Location = new Point(textBoxes[4].Location.X, textBoxes[4].Location.Y + 30);
+
+            TextBox CNNAlgo = new TextBox();
+            CNNAlgo.Size = new Size(400, 50);
+            CNNAlgo.Location = new Point(label.Location.X, label.Location.Y + CNNAlgo.Height);
+            CNNAlgo.Name = "CNNAlgo";
+            CNNAlgo.Text = string.Join(",", TOMLHandle.GetCNNStruct());
 
             trackBars[0].Visible = false;
             textBoxes[0].Location = new Point(10, 70);
@@ -115,7 +131,7 @@ namespace CameraTest
 
             textBoxes[0].ReadOnly = false;
 
-            int[,] Resolutions = new int[,] { {28, 28 }, {640, 360 } ,{640 , 480} ,{1280, 720} };
+            int[,] Resolutions = new int[,] { {28, 28 }, {200,200} ,{640, 360 } ,{640 , 480} ,{1280, 720} };
 
             ComboBox TargRes = new ComboBox();
             TargRes.Name = "TargRes";
@@ -135,11 +151,13 @@ namespace CameraTest
             TargResTitle.ReadOnly = true;
             TargResTitle.Size = TargRes.Size;
             TargResTitle.Location = new Point(TargRes.Location.X, TargRes.Location.Y - TargResTitle.Height);
+            TargResTitle.Name = "TargetResolution";
 
             parentPanel.Controls.Add(TargResTitle);
             parentPanel.Controls.Add(TargRes);
-
+            parentPanel.Controls.Add(CNNAlgo);
             parentPanel.Controls.Add(btnApply);
+            parentPanel.Controls.Add(label);
         }
         private void UpdateTrackBarSize(Panel parentPanel, TrackBar trackBar)
         {
@@ -158,7 +176,7 @@ namespace CameraTest
             // Access the TextBox within the Panel
             foreach (Control control in settingsPanel.Controls)
             {
-                if (control is TextBox)
+                if (control is TextBox && control.Name != "TargetResolution")
                 {
                     try
                     {
@@ -188,7 +206,6 @@ namespace CameraTest
                     }
                     catch (FormatException)
                     {
-                        // Handle format exception if parsing fails
                         MessageBox.Show($"Invalid input in {control.Name}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
@@ -206,7 +223,6 @@ namespace CameraTest
 
             }
 
-            // After iterating through all textboxes, write the struct to TOML file
             TOMLWrite.WriteAllData(comboBoxConfigFiles.SelectedItem.ToString());
         }
     }

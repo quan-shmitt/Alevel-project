@@ -22,12 +22,11 @@ namespace CameraTest
 
             cnn.Forwards(0, 1, threashold);
 
-            forwardPass.Forwards(cnn.MatrixToVector(LayerMatrix), 0, 2);
+            forwardPass.Forwards(cnn.MatrixToVector(cnn.Cache[cnn.Cache.Count - 1]), 0, 2);
 
 
-            int PredictedNum = forwardPass.Cache[forwardPass.Cache.Count() - 1].MaximumIndex();
-            Console.WriteLine(forwardPass.Cache[2]);
-            return PredictedNum.ToString();
+            string PredictedNum =TOMLHandle.GetOutputClasses()[forwardPass.Cache[forwardPass.Cache.Count() - 1].MaximumIndex()];
+            return PredictedNum;
 
         }
 

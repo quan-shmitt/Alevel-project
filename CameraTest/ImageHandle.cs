@@ -7,78 +7,113 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace CameraTest
 {
     internal class ImageHandle
     {
-        private const int Xweight = 784;
-
-
-        public Vector<double> Label(int index, int dimentionSize)
+        public List<Vector<double>> Label(int dimensionSize, string directoryPath)
         {
-            Vector<double> label = Vector<double>.Build.DenseOfArray(new double[dimentionSize]);
+            List<Vector<double>> labels = new List<Vector<double>>();
+            List<string> fileExtensions = new List<string> { ".jpg",".bmp", ".jpeg" };
 
-
-            string pattern = $"image_{index}_label_(\\d+)";
-
-            string[] fileNames = Directory.EnumerateFiles("images")
-                                       .OrderBy(filename => ExtractNumberFromFilename(filename))
-                                       .ToArray();
-
-            Match match = Regex.Match(fileNames[index], pattern);
-
-            if (match.Success)
+            foreach (string d in Directory.GetDirectories(directoryPath))
             {
-                string numberAfterLabel = match.Groups[1].Value;
-                label[Convert.ToInt32(numberAfterLabel)] = 1;
-                return label;
-            }
-            else { return label; }
-        }
-
-
-
-        public Matrix<double> NormRGB(string path, int index)
-        {
-            string[] fileNames = Directory.EnumerateFiles("images")
-                                   .OrderBy(filename => ExtractNumberFromFilename(filename))
-                                   .ToArray();
-
-            string filenameToCheck = $"image_{index}_";
-
-            if (fileNames.Any(fileName => fileName.Contains(filenameToCheck)))
-            {
-                using (Bitmap image = new Bitmap(fileNames[index]))
+                foreach (string fileExt in fileExtensions)
                 {
-                    Matrix<double> RGBVal = Matrix<double>.Build.DenseOfArray(new Double[image.Width, image.Height]);
-
-                    for (int y = 0; y < image.Height; y++)
+                    string[] files = Directory.GetFiles(d, $"*{fileExt}", SearchOption.AllDirectories);
+                    foreach (string fileName in files)
                     {
-                        for (int x = 0; x < image.Width; x++)
-                        {
-                            Color color = image.GetPixel(x, y);
+                        string folderName = Path.GetFileName(Path.GetDirectoryName(fileName));
 
-                            double NormColor = color.GetBrightness();
+                        // Create a one-hot encoded vector for the label
+                        Vector<double> label = Vector<double>.Build.Dense(dimensionSize);
+                        int labelIndex = GetLabelIndex(folderName);
+                        label[labelIndex] = 1; // Set the corresponding index to 1
 
-                            RGBVal[x, y] = NormColor;
-
-
-                        }
+                        labels.Add(label);
                     }
-                    return RGBVal;
                 }
             }
-            else
+
+            return labels;
+        }
+        private int GetLabelIndex(string folderName)
+        {
+            string[] Classes = TOMLHandle.GetOutputClasses();
+
+            if (Array.IndexOf(Classes, folderName) != -1)
             {
-                return null;
+                int index = Array.IndexOf(Classes, folderName);
+                return index;
             }
+
+            return -1;
         }
 
-        private int ExtractNumberFromFilename(string filename)
+        public List<Matrix<double>> NormRGB(string directoryPath)
         {
-            string numberPart = new string(filename.Where(char.IsDigit).ToArray());
-            return int.Parse(numberPart);
+
+            List<Matrix<double>> allRGBValues = new List<Matrix<double>>();
+
+            List<string> fileExtensions = new List<string> { ".jpg", ".bmp", ".jpeg" };
+
+            // Create tasks to process images in parallel
+            List<Task> tasks = new List<Task>();
+
+            foreach (string d in Directory.GetDirectories(directoryPath))
+            {
+                foreach (string fileExt in fileExtensions)
+                {
+                    string[] files = Directory.GetFiles(d, $"*{fileExt}", SearchOption.AllDirectories);
+                    foreach (string fileName in files)
+                    {
+                        // Start a new task to process each image
+                        Task task = Task.Run(() =>
+                        {
+                            using (Bitmap image = new Bitmap(fileName))
+                            {
+                                Matrix<double> RGBVal = Matrix<double>.Build.Dense(image.Width, image.Height);
+
+                                for (int y = 0; y < image.Height; y++)
+                                {
+                                    for (int x = 0; x < image.Width; x++)
+                                    {
+                                        Color color = image.GetPixel(x, y);
+                                        double normColor = color.GetBrightness();
+                                        RGBVal[x, y] = normColor;
+                                    }
+                                }
+
+                                lock (allRGBValues)
+                                {
+                                    allRGBValues.Add(RGBVal);
+                                }
+                            }
+                        });
+
+                        tasks.Add(task);
+                    }
+                }
+            }
+
+            // Wait for all tasks to complete
+            Task.WaitAll(tasks.ToArray());
+
+            return allRGBValues;
+
+        }
+
+
+        private string SanitizeFolderName(string folderName)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char invalidChar in invalidChars)
+            {
+                folderName = folderName.Replace(invalidChar.ToString(), "");
+            }
+            return folderName;
         }
     }
 }

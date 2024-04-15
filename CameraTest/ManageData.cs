@@ -13,8 +13,6 @@ namespace CameraTest
 
     internal class ManageData
     {
-        readonly NetInIt netinit = new NetInIt();
-
 
         public Matrix<double> weights;
         public Vector<double> BiasVector;
@@ -28,8 +26,6 @@ namespace CameraTest
             int k = 0;
 
 
-            if (File.Exists(Filename))
-            {
                 
                 lock (CNNEntryPoint.filelock)
                 {
@@ -66,16 +62,7 @@ namespace CameraTest
                         Monitor.Pulse(CNNEntryPoint.filelock);
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("Weights dont exist \n Remaking file...");
-
-                netinit.WeightGen(layer);
-                GetWeight(layer);
-                return weights;
-
-            }
+            
         }
 
         public Vector<double> getBias(int layer)
@@ -85,8 +72,6 @@ namespace CameraTest
             string filename = $"Data\\layer {layer}\\Bias.txt";
             int k = 0;
 
-            if (File.Exists(filename))
-            {
                 lock (CNNEntryPoint.filelock)
                 {
                     try
@@ -113,14 +98,8 @@ namespace CameraTest
                     }
                 }
             }
-            else
-            {
-                Console.WriteLine("Bias does not exist \n remaking file...");
-                netinit.BiasGen(layer);
-                getBias(layer);
-                return BiasVector;
-            }
-        }
+
+        
 
         public Matrix<double> GetImage()
         {
@@ -169,7 +148,7 @@ namespace CameraTest
 
             string filename = $"image_{Pass}_";
 
-            Matrix<double> LayerVector = imageHandle.NormRGB(filename, Pass);
+            Matrix<double> LayerVector = NetInIt.Images[Pass];
             return LayerVector;
         }
 
@@ -234,8 +213,14 @@ namespace CameraTest
                     }
                     CNNEntryPoint.isfree = false;
 
-                    File.WriteAllText(filename, string.Join(",", bias));
+                    try
+                    {
+                        File.WriteAllText(filename, string.Join(",", bias));
+                    }
+                    catch
+                    {
 
+                    }
                 }
                 finally
                 {

@@ -22,12 +22,6 @@ namespace CameraTest
             Toml.WriteFile(TOMLFILE, $"Data\\Configs\\{filename}");
         }
 
-        // Populate the struct with appropriate values
-        static TOMLWrite()
-        {
-
-        }
-
         // Update the functions to access the values of the struct
         public static void WriteAllData(string filename)
         {

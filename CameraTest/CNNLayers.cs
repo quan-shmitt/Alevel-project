@@ -25,7 +25,7 @@ namespace CameraTest
         readonly int[] TargetRes = TOMLHandle.GetTargetResolution();
         readonly int poolSize = (int)TOMLHandle.GetPoolSize();
 
-        readonly List<Matrix<double>> Cache = new List<Matrix<double>>();
+        public List<Matrix<double>> Cache = new List<Matrix<double>>();
 
         public CNNLayers(Matrix<double> input)
         {

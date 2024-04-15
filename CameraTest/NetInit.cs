@@ -21,6 +21,8 @@ namespace CameraTest
 
         public Vector<double> BiasVector;
 
+        public static List<Matrix<double>> Images = imageHandle.NormRGB("Data\\Images");
+
 
         public NetInIt(int Pass, int layerCount, int CNNCount)
         {
@@ -51,7 +53,7 @@ namespace CameraTest
             string DimFile = "Dimentions.txt";
 
 
-            Matrix<double> vals = imageHandle.NormRGB(filename, Pass);
+            Matrix<double> vals = Images[Pass];
 
 
 

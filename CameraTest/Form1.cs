@@ -145,7 +145,7 @@ namespace CameraTest
         {
             try
             {
-                label2.Text = "button Clicked";
+
                 videoCaptureDevice = new VideoCaptureDevice(filterInfoCollection[cboCamera.SelectedIndex].MonikerString);
                 videoCaptureDevice.NewFrame += VideoCaptureDevice_NewFrame;
                 videoCaptureDevice.Start();
@@ -167,13 +167,18 @@ namespace CameraTest
             if (!cameraExists)
             {
                 MessageBox.Show("Cannot take picture as camera does not exist.\n Please connect a camera to take a picture", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
             }
             else
             {
-                bitmap.Save(@"Images\pic(" + i + ").png", ImageFormat.Png);
-                i++;
-                label3.Text = "Created image";
+                while (videoCaptureDevice.IsRunning == true)
+                {
+                    bitmap.Save($"Data\\Images\\ImageToProcess\\pic.bmp", ImageFormat.Bmp);
+                    PredictInput predictInput = new PredictInput();
+                    predictInput.FindNumInPicture(TOMLHandle.GetCNNLayerCount(), 200);
+                    Thread.Sleep(100);
+                    File.Delete("Data\\Images\\ImageToProcess\\pic.bmp");
+
+                }
             }
         }
 
@@ -186,7 +191,6 @@ namespace CameraTest
             }
             else
             {
-                label3.Text = "Camera stopped";
                 videoCaptureDevice.Stop();
                 pic.Image = null;
             }            

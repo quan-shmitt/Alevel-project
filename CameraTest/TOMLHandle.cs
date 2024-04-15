@@ -69,7 +69,7 @@ namespace CameraTest
 
         public static string[] GetOutputClasses()
         {
-            var OutputClasses = TOMLFILE.Get<TomlTable>("MLPStruct").Get<TomlArray>("OutputCLasses");
+            var OutputClasses = TOMLFILE.Get<TomlTable>("MLPStruct").Get<TomlArray>("OutputClasses");
 
             string[] StringArray = OutputClasses.Items.Select(item => item.Get<string>()).ToArray();
 

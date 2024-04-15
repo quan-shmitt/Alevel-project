@@ -32,9 +32,7 @@
             this.cboCamera = new System.Windows.Forms.ComboBox();
             this.pic = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnMain = new System.Windows.Forms.Button();
@@ -47,9 +45,9 @@
             this.btnStart.Location = new System.Drawing.Point(441, 30);
             this.btnStart.Margin = new System.Windows.Forms.Padding(4);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(100, 26);
+            this.btnStart.Size = new System.Drawing.Size(152, 26);
             this.btnStart.TabIndex = 0;
-            this.btnStart.Text = "&Click to start";
+            this.btnStart.Text = "&Click to start Camera";
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click_1);
             // 
@@ -83,34 +81,15 @@
             this.label1.TabIndex = 3;
             this.label1.Text = "Camera:";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(549, 35);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(44, 16);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "label2";
-            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(659, 33);
+            this.button1.Location = new System.Drawing.Point(659, 30);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(161, 23);
+            this.button1.Size = new System.Drawing.Size(161, 26);
             this.button1.TabIndex = 5;
-            this.button1.Text = "&Click to take photo";
+            this.button1.Text = "&Click to start";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(549, 9);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(44, 16);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "label3";
             // 
             // button3
             // 
@@ -144,9 +123,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(854, 34);
+            this.button4.Location = new System.Drawing.Point(851, 30);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(154, 21);
+            this.button4.Size = new System.Drawing.Size(154, 26);
             this.button4.TabIndex = 12;
             this.button4.Text = "&Click to train";
             this.button4.UseVisualStyleBackColor = true;
@@ -161,9 +140,7 @@
             this.Controls.Add(this.btnMain);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.button3);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pic);
             this.Controls.Add(this.cboCamera);
@@ -186,9 +163,7 @@
         private System.Windows.Forms.ComboBox cboCamera;
         private System.Windows.Forms.PictureBox pic;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button button4;

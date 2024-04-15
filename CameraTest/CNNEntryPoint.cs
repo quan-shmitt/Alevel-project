@@ -31,13 +31,13 @@ namespace CameraTest
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            Datainit();
 
 
+            
 
 
-            int Passes = 500;
-            int epochs = 5;
+            int Passes = CountFiles("Data\\Images") - 4;
+            int epochs = 1;
 
             Pass(Passes, epochs);
             
@@ -75,7 +75,7 @@ namespace CameraTest
 
                     List<Vector<double>> Input = forwardPass.Cache;
 
-                    backpropagation.BackProp(Input, image.Label(Convert.ToInt32(i), 10), learningRate, LayerCount);
+                    backpropagation.BackProp(Input, image.Label(TOMLHandle.GetOutputClasses().Length, "Data\\Images")[i], learningRate, LayerCount);
                     backpropagation.BackpropagateConvLayers(manageData.getKernel()[0],learningRate , CNNCount);
                 });
                 TrainingMenu.SetCost(cost / Passes);
@@ -86,31 +86,21 @@ namespace CameraTest
 
         }
 
-
-
-        static void Datainit()
+        public static int CountFiles(string directory)
         {
-            string path = "MNIST\\MNISTDataSet.exe";
+            int fileCount = 0;
 
-            if (!File.Exists("MNIST\\images"))
+            // Count files in the current directory
+            fileCount += Directory.GetFiles(directory).Length;
+
+            // Count files in subdirectories recursively
+            foreach (string subDirectory in Directory.GetDirectories(directory))
             {
-                Console.WriteLine("started processing");
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = path,
-                    UseShellExecute = true
-                };
-
-                try
-                {
-                    Process process = Process.Start(startInfo);
-                    process.WaitForExit();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                fileCount += CountFiles(subDirectory);
             }
+
+            return fileCount;
         }
+  
     }
 }
