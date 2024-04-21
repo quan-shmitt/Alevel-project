@@ -25,16 +25,22 @@ namespace CameraTest
         // Update the functions to access the values of the struct
         public static void WriteAllData(string filename)
         {
-            // Update MLPStruct fields
-            TOMLFILE.Get<TomlTable>("MLPStruct").Update("HiddenLayerCount", dataStruct.HiddenLayerCount);
-            TOMLFILE.Get<TomlTable>("MLPStruct").Update("LearningRate", dataStruct.LearningRate);
 
-            // Update CNNStruct fields
-            TOMLFILE.Get<TomlTable>("CNNStruct").Update("kernelSize", dataStruct.KernelSize);
-            TOMLFILE.Get<TomlTable>("CNNStruct").Update("kernelSteps", dataStruct.KernelStep);
-            TOMLFILE.Get<TomlTable>("CNNStruct").Update("PoolSize", dataStruct.PoolSize);
-            TOMLFILE.Get<TomlTable>("CNNStruct").Update("TargetResolution", dataStruct.TargetRes);
+            try
+            {
+                TOMLFILE.Get<TomlTable>("MLPStruct").Update("HiddenLayerCount", dataStruct.HiddenLayerCount);
+                TOMLFILE.Get<TomlTable>("MLPStruct").Update("LearningRate", dataStruct.LearningRate);
 
+                // Update CNNStruct fields
+                TOMLFILE.Get<TomlTable>("CNNStruct").Update("kernelSize", dataStruct.KernelSize);
+                TOMLFILE.Get<TomlTable>("CNNStruct").Update("kernelSteps", dataStruct.KernelStep);
+                TOMLFILE.Get<TomlTable>("CNNStruct").Update("PoolSize", dataStruct.PoolSize);
+                TOMLFILE.Get<TomlTable>("CNNStruct").Update("TargetResolution", dataStruct.TargetRes);
+                TOMLFILE.Get<TomlTable>("CNNStruct").Update("algorithms", dataStruct.CNNAlgo);
+                TOMLFILE.Get<TomlTable>("Testing").Update("TestCount", dataStruct.TestCount);
+
+            }
+            catch { }
             WriteToml(filename);
         }
 
@@ -48,6 +54,9 @@ namespace CameraTest
             public double KernelStep;
             public double PoolSize;
             public int[] TargetRes;
+            public string[] CNNAlgo;
+            public double TestCount;
+            public double TestAcc;
         }
     }
 }

@@ -73,21 +73,35 @@ namespace CameraTest
             TrainPanel.Visible = true;
 
             Button Test = new Button();
-            Test.Size = new Size(30, 30);
-            Test.Location = new Point(status.Width + 20 , Test.Height);
+            Test.AutoSize = true;
+            Test.Text = "Click to test";
+            Test.Location = new Point(status.Width + Test.Width + 30, predict.Location.Y + Test.Height + 10);
             Test.Click += Test_Click;
 
+            Test.Visible = true;
+
             predict.Size = new Size(200, 200);
-            predict.Location = new Point(status.Width + Test.Width + 30 , predict.Height);
+            predict.Location = new Point(status.Width + Test.Width + 30 , 10);
+
+            predict.Visible = true;
 
             TrainPanel.Controls.Add(Test);
             TrainPanel.Controls.Add(predict);
         }
 
-        public static void Test_Click(object sender, EventArgs e)
+        public static async void Test_Click(object sender, EventArgs e)
         {
-            PredictInput predictInput = new PredictInput();
-            predict.Text = predictInput.FindNumInPicture(1, 200);
+            string text = "!";
+            status.Text = "Tesing";
+
+            await Task.Run(() =>
+            {
+                PredictInput predictInput = new PredictInput();
+                text = predictInput.Test();
+            });
+            predict.Text = text;
+            status.Text = "Done!";
+
         }
 
         public static void CloseMenu_Click(object sender, EventArgs e)

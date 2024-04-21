@@ -99,55 +99,9 @@ namespace CameraTest
                 }
             }
 
-        
-
-        public Matrix<double> GetImage()
-        {
-            string FileName = "Data\\ImageToProcess";
-
-            if (Directory.Exists(FileName))
-            {
-                Console.WriteLine("file exists");
-                string[] files = Directory.GetFiles(FileName);
-                string file = files[0];
-
-                using (Bitmap image = new Bitmap(file))
-                {
-                    Matrix<double> RGBVal = Matrix<double>.Build.DenseOfArray(new Double[image.Width, image.Height]);
-
-                    for (int y = 0; y < image.Height; y++)
-                    {
-                        for (int x = 0; x < image.Width; x++)
-                        {
-                            Color color = image.GetPixel(x, y);
-
-                            double NormColor = color.GetBrightness();
-
-                            RGBVal[x, y] = NormColor;
-
-
-                        }
-                    }
-                    return RGBVal;
-                }
-            }
-            else
-            {
-                Console.WriteLine("File doesnt exist, remaking File...");
-
-                Directory.CreateDirectory(FileName);
-                return GetImage();
-            }
-
-        }
-
 
         public Matrix<double> LayerVectorGen(int Pass)
         {
-            ImageHandle imageHandle = new ImageHandle();
-
-            string filename = $"image_{Pass}_";
-
             Matrix<double> LayerVector = NetInIt.Images[Pass];
             return LayerVector;
         }
@@ -181,8 +135,14 @@ namespace CameraTest
                     }
                     CNNEntryPoint.isfree = false;
 
-                    File.WriteAllText(filename, string.Join(",", weight));
-
+                    try
+                    {
+                        File.WriteAllText(filename, string.Join(",", weight));
+                    }
+                    catch
+                    { 
+                        
+                    }
                 }
                 finally
                 {
@@ -342,9 +302,11 @@ namespace CameraTest
                         Monitor.Wait(CNNEntryPoint.filelock);
                     }
                     CNNEntryPoint.isfree = false;
-
-                    File.WriteAllText(filename, string.Join(",", kernel));
-
+                    try
+                    {
+                        File.WriteAllText(filename, string.Join(",", kernel));
+                    }
+                    catch { }
                 }
                 finally
                 {

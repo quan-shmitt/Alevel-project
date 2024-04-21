@@ -115,11 +115,6 @@ namespace CameraTest
             TOMLWrite.GetToml(ConfigList[0]);
         }
 
-        private void btnStart_Click(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         private void VideoCaptureDevice_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             pic.Image = (Bitmap)eventArgs.Frame.Clone();
@@ -166,18 +161,15 @@ namespace CameraTest
         {
             if (!cameraExists)
             {
-                MessageBox.Show("Cannot take picture as camera does not exist.\n Please connect a camera to take a picture", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Cannot start checking scene for weapons, no camera connected", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
                 while (videoCaptureDevice.IsRunning == true)
                 {
-                    bitmap.Save($"Data\\Images\\ImageToProcess\\pic.bmp", ImageFormat.Bmp);
                     PredictInput predictInput = new PredictInput();
-                    predictInput.FindNumInPicture(TOMLHandle.GetCNNLayerCount(), 200);
-                    Thread.Sleep(100);
-                    File.Delete("Data\\Images\\ImageToProcess\\pic.bmp");
-
+                    predictInput.PredictContents(bitmap);
+                    Thread.Sleep(50);
                 }
             }
         }

@@ -12,7 +12,6 @@ namespace CameraTest
 {
     internal class Backpropagation
     {
-        readonly ImageHandle label = new ImageHandle();
         public ManageData getData = new ManageData();
 
         readonly List<Matrix<double>> Weights = new List<Matrix<double>>();

@@ -13,7 +13,6 @@ namespace CameraTest
         readonly ManageData manageData = new ManageData();
 
         public List<Matrix<double>> Kernel;
-        public List<Matrix<double>> LayerVectors = new List<Matrix<double>>();
 
         public Matrix<double> result;
 
@@ -31,11 +30,6 @@ namespace CameraTest
         {
             Kernel = manageData.getKernel();
             this.input = input;
-        }
-
-        public Matrix<double> CNNOutput()
-        {
-            return null;
         }
 
 

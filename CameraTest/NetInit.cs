@@ -12,7 +12,6 @@ namespace CameraTest
     internal class NetInIt
     {
 
-        public static ImageHandle imageHandle = new ImageHandle();
 
         public Matrix<double> weights;
 
@@ -21,7 +20,7 @@ namespace CameraTest
 
         public Vector<double> BiasVector;
 
-        public static List<Matrix<double>> Images = imageHandle.NormRGB("Data\\Images");
+        public static List<Matrix<double>> Images = ImageHandle.NormRGB("Data\\Images");
 
 
         public NetInIt(int Pass, int layerCount, int CNNCount)
@@ -43,34 +42,6 @@ namespace CameraTest
         public NetInIt()
         {
 
-        }
-        //heheheha
-
-
-        static public int GetFileDimentions(int Pass)
-        {
-            string filename = $"image_{Pass}_";
-            string DimFile = "Dimentions.txt";
-
-
-            Matrix<double> vals = Images[Pass];
-
-
-
-            string existingText;
-            using (StreamReader reader = new StreamReader(DimFile))
-            {
-                existingText = reader.ReadToEnd();
-            }
-
-            // Write the new text and then the existing content back to the file
-            using (StreamWriter writer = new StreamWriter(DimFile))
-            {
-                writer.Write($"layer0Dimention = {vals.ColumnCount * vals.RowCount}");
-                writer.Write(existingText);
-            }
-
-            return vals.ColumnCount * vals.RowCount;
         }
 
         void fileGen(int layer, int CNNlayer, int[] dim)

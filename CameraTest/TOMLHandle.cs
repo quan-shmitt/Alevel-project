@@ -99,6 +99,20 @@ namespace CameraTest
             return PoolSize;
         }
 
+        public static double GetTestCount()
+        {
+            var Testcount = TOMLFILE.Get<TomlTable>("Testing").Get<double>("TestCount");
+
+            return Testcount;
+        }
+
+        public static double GetTestAcc()
+        {
+            var acc = TOMLFILE.Get<TomlTable>("Testing").Get<double>("TestAccuracy");
+
+            return acc;
+        }
+
 
     }
 }

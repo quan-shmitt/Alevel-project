@@ -33,10 +33,10 @@ namespace CameraTest
 
 
 
-            
 
 
-            int Passes = CountFiles("Data\\Images") - 4;
+
+            int Passes = CountFiles("Data\\Images") - 5000;
             int epochs = 1;
 
             Pass(Passes, epochs);
@@ -50,7 +50,6 @@ namespace CameraTest
             ManageData manageData = new ManageData();
 
 
-            ImageHandle image = new ImageHandle();
 
             NetInIt networkGen = new NetInIt(Passes, LayerCount, CNNCount);
 
@@ -75,7 +74,7 @@ namespace CameraTest
 
                     List<Vector<double>> Input = forwardPass.Cache;
 
-                    backpropagation.BackProp(Input, image.Label(TOMLHandle.GetOutputClasses().Length, "Data\\Images")[i], learningRate, LayerCount);
+                    backpropagation.BackProp(Input, ImageHandle.Labels[i], learningRate, LayerCount);
                     backpropagation.BackpropagateConvLayers(manageData.getKernel()[0],learningRate , CNNCount);
                 });
                 TrainingMenu.SetCost(cost / Passes);

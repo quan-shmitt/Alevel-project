@@ -11,9 +11,13 @@ using System.Windows.Forms;
 
 namespace CameraTest
 {
-    internal class ImageHandle
+    internal static class ImageHandle
     {
-        public List<Vector<double>> Label(int dimensionSize, string directoryPath)
+
+        public static List<Vector<double>> Labels = Label(TOMLHandle.GetOutputClasses().Length, "Data\\Images");
+
+
+        public static List<Vector<double>> Label(int dimensionSize, string directoryPath)
         {
             List<Vector<double>> labels = new List<Vector<double>>();
             List<string> fileExtensions = new List<string> { ".jpg",".bmp", ".jpeg" };
@@ -39,7 +43,7 @@ namespace CameraTest
 
             return labels;
         }
-        private int GetLabelIndex(string folderName)
+        private static int GetLabelIndex(string folderName)
         {
             string[] Classes = TOMLHandle.GetOutputClasses();
 
@@ -52,7 +56,7 @@ namespace CameraTest
             return -1;
         }
 
-        public List<Matrix<double>> NormRGB(string directoryPath)
+        public static List<Matrix<double>> NormRGB(string directoryPath)
         {
 
             List<Matrix<double>> allRGBValues = new List<Matrix<double>>();
@@ -105,15 +109,5 @@ namespace CameraTest
 
         }
 
-
-        private string SanitizeFolderName(string folderName)
-        {
-            char[] invalidChars = Path.GetInvalidFileNameChars();
-            foreach (char invalidChar in invalidChars)
-            {
-                folderName = folderName.Replace(invalidChar.ToString(), "");
-            }
-            return folderName;
-        }
     }
 }

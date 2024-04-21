@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace CameraTest
 
             TrackBar[] trackBars = new TrackBar[5];
             TextBox[] textBoxes = new TextBox[5];
-            string[] titles = new string[] { "Hidden layer count", "Learning Rate", "Kernel Size", "Kernel Step", "Pool Size"};
+            string[] titles = new string[] { "Hidden layer count, input manually:", "Learning Rate", "Kernel Size", "Kernel Step", "Pool Size"};
             int[] maximum = new int[] {50, 20, 5, 5, 5};
 
             comboBoxConfigFiles = new ComboBox();
@@ -104,19 +105,16 @@ namespace CameraTest
                 parentPanel.Controls.Add(textBoxes[i]);
 
 
-
-
-
             }
 
             Label label = new Label();
-            label.Text = "CNN Algorithms:";
+            label.Text = "CNN Algorithms \nPlease input manually and use correct spelling:";
             label.AutoSize = true;
-            label.Location = new Point(textBoxes[4].Location.X, textBoxes[4].Location.Y + 30);
+            label.Location = new Point(textBoxes[4].Location.X, textBoxes[4].Location.Y + label.Height + 50);
 
             TextBox CNNAlgo = new TextBox();
             CNNAlgo.Size = new Size(400, 50);
-            CNNAlgo.Location = new Point(label.Location.X, label.Location.Y + CNNAlgo.Height);
+            CNNAlgo.Location = new Point(label.Location.X, label.Location.Y + CNNAlgo.Height + 10);
             CNNAlgo.Name = "CNNAlgo";
             CNNAlgo.Text = string.Join(",", TOMLHandle.GetCNNStruct());
 
@@ -129,9 +127,14 @@ namespace CameraTest
             textBoxes[3].Text = TOMLHandle.GetKernelStep().ToString();
             textBoxes[4].Text = TOMLHandle.GetPoolSize().ToString();
 
+            trackBars[1].Value = (int)(TOMLHandle.GetLearningRate() * 100);
+            trackBars[2].Value = (int)TOMLHandle.GetKernelSize();
+            trackBars[3].Value = (int)TOMLHandle.GetKernelStep();
+            trackBars[4].Value = (int)TOMLHandle.GetPoolSize();
+
             textBoxes[0].ReadOnly = false;
 
-            int[,] Resolutions = new int[,] { {28, 28 }, {200,200} ,{640, 360 } ,{640 , 480} ,{1280, 720} };
+            int[,] Resolutions = new int[,] { {28, 28 }, {100,100} ,{200,200} ,{640, 360 } ,{640 , 480} ,{1280, 720} };
 
             ComboBox TargRes = new ComboBox();
             TargRes.Name = "TargRes";
@@ -144,7 +147,7 @@ namespace CameraTest
                 TargRes.Items.Add(Resolutions[i,0].ToString() + "x" + Resolutions[i, 1].ToString());
             }
 
-            TargRes.SelectedItem = TOMLHandle.GetTargetResolution();
+            TargRes.SelectedItem = string.Join("x",TOMLHandle.GetTargetResolution());
 
             TextBox TargResTitle = new TextBox();
             TargResTitle.Text = "Target Resolution";
@@ -152,12 +155,43 @@ namespace CameraTest
             TargResTitle.Size = TargRes.Size;
             TargResTitle.Location = new Point(TargRes.Location.X, TargRes.Location.Y - TargResTitle.Height);
             TargResTitle.Name = "TargetResolution";
+            TargResTitle.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
             parentPanel.Controls.Add(TargResTitle);
             parentPanel.Controls.Add(TargRes);
             parentPanel.Controls.Add(CNNAlgo);
             parentPanel.Controls.Add(btnApply);
             parentPanel.Controls.Add(label);
+
+            Label Testbox = new Label();
+            Testbox.Location = new Point(comboBoxConfigFiles.Location.X - 10, comboBoxConfigFiles.Location.Y + 40);
+            Testbox.Text = "Number of images used in test";
+            Testbox.AutoSize = true;
+            Testbox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            TextBox TestNum = new TextBox();
+            TestNum.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            TestNum.Text = TOMLHandle.GetTestCount().ToString();
+
+            TrackBar TestCount = new TrackBar();
+            TestCount.Maximum = 2000;
+            TestCount.Location = new Point(comboBoxConfigFiles.Location.X - 10, comboBoxConfigFiles.Location.Y + 60);
+            TestCount.ValueChanged += (sender, e) =>
+            {
+                TestNum.Text = TestCount.Value.ToString();
+            };
+            TestCount.Anchor = AnchorStyles.Right | AnchorStyles.Top;
+            TestCount.Value = (int)TOMLHandle.GetTestCount();
+
+
+            TestNum.Location = new Point(TestCount.Location.X, TestCount.Location.Y + 30);
+            TestNum.Name = "TestCount";
+
+
+            parentPanel.Controls.Add(Testbox);
+            parentPanel.Controls.Add(TestNum);
+            parentPanel.Controls.Add(TestCount);
+
         }
         private void UpdateTrackBarSize(Panel parentPanel, TrackBar trackBar)
         {
@@ -180,26 +214,39 @@ namespace CameraTest
                 {
                     try
                     {
-                        // Split the text by space and parse as integers
-                        double[] intArray = control.Text.Split(' ').Select(double.Parse).ToArray();
-
+                        double[] DoubleArray = new double[0];
+                        if (control.Name != "CNNAlgo")
+                        {
+                             DoubleArray = control.Text.Split(' ').Select(double.Parse).ToArray();
+                        }
                         // Depending on the name of the textbox, write the values to the appropriate property of the struct
                         switch (control.Name)
                         {
-                            case "Hidden layer count":
-                                TOMLWrite.dataStruct.HiddenLayerCount = intArray;
+                            case "Hidden layer count, input manually:":
+                                TOMLWrite.dataStruct.HiddenLayerCount = DoubleArray;
                                 break;
                             case "Learning Rate":
-                                TOMLWrite.dataStruct.LearningRate = intArray[0]; // Assuming LearningRate is a single value
+                                TOMLWrite.dataStruct.LearningRate = DoubleArray[0]; // Assuming LearningRate is a single value
                                 break;
                             case "Kernel Size":
-                                TOMLWrite.dataStruct.KernelSize = intArray[0]; // Assuming KernelSize is a single value
+                                TOMLWrite.dataStruct.KernelSize = DoubleArray[0]; // Assuming KernelSize is a single value
                                 break;
                             case "Kernel Step":
-                                TOMLWrite.dataStruct.KernelStep = intArray[0]; // Assuming KernelStep is a single value
+                                TOMLWrite.dataStruct.KernelStep = DoubleArray[0]; // Assuming KernelStep is a single value
                                 break;
                             case "Pool Size":
-                                TOMLWrite.dataStruct.PoolSize = intArray[0]; // Assuming PoolSize is a single value
+                                TOMLWrite.dataStruct.PoolSize = DoubleArray[0]; // Assuming PoolSize is a single value
+                                break;
+                            case "TargetResolution":
+                                TOMLWrite.dataStruct.TestCount = DoubleArray[0];
+                                break;
+                            case "TestCount":
+                                TOMLWrite.dataStruct.TestCount = DoubleArray[0];
+                                break;
+                            case "CNNAlgo":
+                                TOMLWrite.dataStruct.CNNAlgo = control.Text.Split(',');
+                                break;
+                            case null:
                                 break;
                                 // Add cases for other textboxes here if needed
                         }
