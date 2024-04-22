@@ -14,8 +14,13 @@ namespace CameraTest
     {
         public ManageData getData = new ManageData();
 
-        readonly List<Matrix<double>> Weights = new List<Matrix<double>>();
-        readonly List<Vector<double>> Bias = new List<Vector<double>>();
+        public List<Matrix<double>> Weights = new List<Matrix<double>>();
+        public List<Vector<double>> Bias = new List<Vector<double>>();
+        public List<Matrix<double>> kernels = new List<Matrix<double>>();
+
+        public List<Matrix<double>> ChangeInWeights = new List<Matrix<double>>();
+        public List<Vector<double>> ChangeInBias = new List<Vector<double>>();
+        public List<Matrix<double>> ChangeInKernel = new List<Matrix<double>>();
 
         Vector<double> upstreamGradient;
 
@@ -43,12 +48,9 @@ namespace CameraTest
 
             var gradientWrtBias = LayerVectors[layer] - Target;
 
-            Weights[layer - 1] -= LearningRate * gradientWrtWeights;
+            ChangeInWeights.Add(LearningRate * gradientWrtWeights);
 
-            Bias[layer - 1] -= LearningRate * gradientWrtBias;
-
-            getData.SaveWeights(Weights[layer - 1], layer - 1);
-            getData.SaveBias(Bias[layer - 1], layer - 1);
+            ChangeInBias.Add(LearningRate * gradientWrtBias);
 
             upstreamGradient = LayerVectors[layer] - Target;
 
@@ -73,12 +75,9 @@ namespace CameraTest
                     }
                 }
 
-                Weights[layer - 1] -= LearningRate * gradientWrtWeights;
+                ChangeInWeights.Add(LearningRate * gradientWrtWeights);
 
-                Bias[layer - 1] -= LearningRate * gradientWrtBias;
-
-                getData.SaveWeights(Weights[layer - 1], layer - 1);
-                getData.SaveBias(Bias[layer - 1], layer - 1);
+                ChangeInBias.Add(LearningRate * gradientWrtBias);
 
                 upstreamGradient = (Weights[layer].Transpose() * upstreamGradient);
                 upstreamGradient = upstreamGradient.PointwiseMultiply(ReLU_Derivative(LayerVectors[layer]));
@@ -102,10 +101,9 @@ namespace CameraTest
 
             Matrix<double> gradient = ComputeGradient(upstreamGradient, kernel);
 
-            kernel -= learningRate * gradient;
+            ChangeInKernel.Add(learningRate * gradient);
 
-            getData.SaveKernel(kernel, layer);
-
+            kernels.Add(kernel);
             BackpropagateConvLayers(kernel, learningRate, layer);
         }
 

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 
 namespace CameraTest
 {
@@ -15,6 +16,10 @@ namespace CameraTest
         static TextBox Cost;
         public static TextBox status;
         private static Form1 mainForm;
+
+        public static TrackBar Passes = new TrackBar();
+        public static TrackBar Epochs = new TrackBar();
+
 
         static TextBox predict = new TextBox();
 
@@ -87,6 +92,67 @@ namespace CameraTest
 
             TrainPanel.Controls.Add(Test);
             TrainPanel.Controls.Add(predict);
+
+            TextBox passCount = new TextBox();
+
+            Passes.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            Passes.AutoSize = true;
+            Passes.Location = new Point(500, 100);
+            Passes.Maximum = CNNEntryPoint.CountFiles("Data\\Images");
+            Passes.ValueChanged += (sender, e) =>
+            {
+                passCount.Text = Passes.Value.ToString();
+            };
+            Passes.Value = CNNEntryPoint.CountFiles("Data\\Images");
+            Passes.Visible = true;
+
+            passCount.AutoSize = true;
+            passCount.Location = new Point(Passes.Location.X, Passes.Location.Y + Passes.Height);
+            passCount.Text = Passes.Value.ToString();
+            passCount.Visible = true;
+
+            TextBox epochCount = new TextBox();
+
+
+            Epochs.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            Epochs.AutoSize = true;
+            Epochs.Location = new Point(500, 200);
+            Epochs.Maximum = CNNEntryPoint.CountFiles("Data\\Images");
+            Epochs.ValueChanged += (sender, e) =>
+            {
+                epochCount.Text = Epochs.Value.ToString();
+            };
+            Epochs.Value = 1;
+            Epochs.Maximum = 200;
+            Epochs.Visible = true;
+
+            epochCount.AutoSize = true;
+            epochCount.Location = new Point(Epochs.Location.X, Epochs.Location.Y + 30);
+            epochCount.Text = Epochs.Value.ToString();
+            epochCount.Visible = true;
+
+            Label passname = new Label();
+            Label epochname = new Label();
+
+            passname.Text = "Pass Count";
+            epochname.Text = "Epochs";
+
+            passname.Location = new Point(Passes.Location.X, Passes.Location.Y - Passes.Height + 20);
+            epochname.Location = new Point(Epochs.Location.X, Epochs.Location.Y - Epochs.Height + 20);
+
+            passname.AutoSize = true;
+            epochname.AutoSize = true;
+
+            passname.Visible = true;
+            epochname.Visible = true;
+
+            TrainPanel.Controls.Add(epochCount);
+            TrainPanel.Controls.Add(Epochs);
+            TrainPanel.Controls.Add(Passes);
+            TrainPanel.Controls.Add(passCount);
+            TrainPanel.Controls.Add(passname);
+            TrainPanel.Controls.Add(epochname);
+
         }
 
         public static async void Test_Click(object sender, EventArgs e)
@@ -124,10 +190,10 @@ namespace CameraTest
         public static void SetCost(double cost)
         {
             // Check if invoking is required
-            if (TrainingMenu.status.InvokeRequired)
+            if (TrainingMenu.Cost.InvokeRequired)
             {
                 // If it is, invoke the method on the UI thread
-                TrainingMenu.status.Invoke((MethodInvoker)delegate {
+                TrainingMenu.Cost.Invoke((MethodInvoker)delegate {
                     TrainingMenu.Cost.Text = cost.ToString();
                 });
             }
@@ -137,7 +203,39 @@ namespace CameraTest
                 TrainingMenu.Cost.Text = cost.ToString();
             }
         }
-        
 
+        public static int GetPassCount()
+        {
+            if (Passes.InvokeRequired)
+            {
+                int passes = 0;
+                Passes.Invoke((MethodInvoker)delegate
+                {
+                    passes = Passes.Value;
+                });
+                return passes;
+            }
+            else
+            {
+                return Passes.Value;
+            }
+        }
+
+        public static int GetEpochs()
+        {
+            if (Epochs.InvokeRequired)
+            {
+                int epochs = 0;
+                Epochs.Invoke((MethodInvoker)delegate
+                {
+                    epochs = Epochs.Value;
+                });
+                return epochs;
+            }
+            else
+            {
+                return Epochs.Value;
+            }
+        }
     }
 }
